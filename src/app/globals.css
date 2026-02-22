@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  /* MPT Corporate Colors */
+  --mpt-teal: #00919E;
+  --mpt-teal-dark: #007A85;
+  --mpt-teal-light: #00B4C4;
+  --mpt-blue: #0066CC;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* MPT Corporate button colors */
+.btn-mpt-primary {
+  background-color: var(--mpt-teal);
+}
+.btn-mpt-primary:hover {
+  background-color: var(--mpt-teal-dark);
+}

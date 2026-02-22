@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPT Phone - VoIP Softphone</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="icon" href="assets/favicon.ico">
+</head>
+<body>
+    <div id="app">
+        <header class="app-header">
+            <div class="header-content">
+                <img src="assets/logo.png" alt="MPT Phone" class="logo">
+                <h1>MPT Phone</h1>
+                <div class="user-menu">
+                    <span id="user-name"></span>
+                    <button id="settings-btn" class="btn-icon">⚙️</button>
+                    <button id="logout-btn" class="btn-icon">🚪</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Phone Interface -->
+            <div id="phone-container" class="phone-container">
+                
+                <!-- Connection Status -->
+                <div id="connection-status" class="status-bar">
+                    <div class="status-indicator offline"></div>
+                    <span id="status-text">Connecting...</span>
+                </div>
+
+                <!-- Active Call Display -->
+                <div id="call-display" class="call-display hidden">
+                    <div class="call-info">
+                        <div class="contact-avatar">
+                            <img id="contact-image" src="assets/default-avatar.png" alt="Contact">
+                        </div>
+                        <div class="contact-details">
+                            <div id="contact-name" class="contact-name">Unknown Caller</div>
+                            <div id="contact-number" class="contact-number"></div>
+                            <div id="call-duration" class="call-timer">00:00</div>
+                        </div>
+                    </div>
+                    <div class="call-controls">
+                        <button id="mute-btn" class="call-btn mute">🎤</button>
+                        <button id="hold-btn" class="call-btn hold">⏸️</button>
+                        <button id="hangup-btn" class="call-btn hangup">📞</button>
+                        <button id="keypad-btn" class="call-btn keypad">⌨️</button>
+                        <button id="transfer-btn" class="call-btn transfer">↗️</button>
+                    </div>
+                </div>
+
+                <!-- Dialer Interface -->
+                <div id="dialer" class="dialer">
+                    <div class="number-display">
+                        <input type="tel" id="number-input" placeholder="Enter number..." maxlength="20">
+                        <button id="clear-btn" class="btn-clear">×</button>
+                    </div>
+                    
+                    <div class="keypad">
+                        <button class="key" data-key="1">1<span class="letters"></span></button>
+                        <button class="key" data-key="2">2<span class="letters">ABC</span></button>
+                        <button class="key" data-key="3">3<span class="letters">DEF</span></button>
+                        <button class="key" data-key="4">4<span class="letters">GHI</span></button>
+                        <button class="key" data-key="5">5<span class="letters">JKL</span></button>
+                        <button class="key" data-key="6">6<span class="letters">MNO</span></button>
+                        <button class="key" data-key="7">7<span class="letters">PQRS</span></button>
+                        <button class="key" data-key="8">8<span class="letters">TUV</span></button>
+                        <button class="key" data-key="9">9<span class="letters">WXYZ</span></button>
+                        <button class="key special" data-key="*">*</button>
+                        <button class="key" data-key="0">0<span class="letters">+</span></button>
+                        <button class="key special" data-key="#">#</button>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="call-btn" class="btn-primary btn-call">📞 Call</button>
+                        <button id="video-btn" class="btn-secondary">📹 Video</button>
+                    </div>
+                </div>
+
+                <!-- Contact Search -->
+                <div id="contacts" class="contacts-panel">
+                    <div class="search-bar">
+                        <input type="text" id="contact-search" placeholder="Search contacts...">
+                    </div>
+                    <div id="contact-list" class="contact-list">
+                        <!-- Contacts will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <nav class="tab-navigation">
+                <button class="tab-btn active" data-tab="dialer">📞 Dialer</button>
+                <button class="tab-btn" data-tab="contacts">👥 Contacts</button>
+                <button class="tab-btn" data-tab="history">📋 History</button>
+                <button class="tab-btn" data-tab="voicemail">🎵 Voicemail</button>
+                <button class="tab-btn" data-tab="jack">🤖 Jack AI</button>
+                <button class="tab-btn" data-tab="analytics">📊 Analytics</button>
+            </nav>
+
+            <!-- Call History -->
+            <div id="history" class="history-panel tab-content hidden">
+                <div class="history-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="missed">Missed</button>
+                    <button class="filter-btn" data-filter="outgoing">Outgoing</button>
+                    <button class="filter-btn" data-filter="incoming">Incoming</button>
+                </div>
+                <div id="call-history" class="call-history">
+                    <!-- History items will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Voicemail -->
+            <div id="voicemail" class="voicemail-panel tab-content hidden">
+                <div id="voicemail-list" class="voicemail-list">
+                    <!-- Voicemail items will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Jack AI Management -->
+            <div id="jack" class="jack-panel tab-content hidden">
+                <div class="jack-header">
+                    <h2>🤖 Jack AI Receptionist</h2>
+                    <div class="jack-status">
+                        <div class="status-indicator" id="jack-status-indicator"></div>
+                        <span id="jack-status-text">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="jack-info-card">
+                    <div class="info-row">
+                        <span class="label">Jack's Number:</span>
+                        <span class="value" id="jack-phone">+1 (239) 966-1917</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Current Mode:</span>
+                        <span class="value" id="jack-mode">Business Hours</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Business Hours:</span>
+                        <span class="value">Mon-Fri 9:00 AM - 5:00 PM ET</span>
+                    </div>
+                </div>
+
+                <div class="jack-routing-config">
+                    <h3>Call Routing</h3>
+                    <div class="routing-grid">
+                        <div class="routing-item">
+                            <label>Sales Inquiries</label>
+                            <select id="sales-routing">
+                                <option value="101">Extension 101</option>
+                                <option value="102">Extension 102</option>
+                                <option value="voicemail">Voicemail</option>
+                            </select>
+                        </div>
+                        <div class="routing-item">
+                            <label>Technical Support</label>
+                            <select id="support-routing">
+                                <option value="201">Extension 201</option>
+                                <option value="202">Extension 202</option>
+                                <option value="voicemail">Voicemail</option>
+                            </select>
+                        </div>
+                        <div class="routing-item">
+                            <label>Billing Questions</label>
+                            <select id="billing-routing">
+                                <option value="301">Extension 301</option>
+                                <option value="voicemail">Voicemail</option>
+                            </select>
+                        </div>
+                        <div class="routing-item">
+                            <label>General Inquiries</label>
+                            <select id="general-routing">
+                                <option value="100">Extension 100</option>
+                                <option value="voicemail">Voicemail</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="update-routing" class="btn-primary">Update Routing</button>
+                </div>
+
+                <div class="jack-hours-config">
+                    <h3>Business Hours</h3>
+                    <div class="hours-grid">
+                        <div class="day-config">
+                            <label>Monday</label>
+                            <input type="time" id="mon-open" value="09:00">
+                            <span>to</span>
+                            <input type="time" id="mon-close" value="17:00">
+                        </div>
+                        <div class="day-config">
+                            <label>Tuesday</label>
+                            <input type="time" id="tue-open" value="09:00">
+                            <span>to</span>
+                            <input type="time" id="tue-close" value="17:00">
+                        </div>
+                        <div class="day-config">
+                            <label>Wednesday</label>
+                            <input type="time" id="wed-open" value="09:00">
+                            <span>to</span>
+                            <input type="time" id="wed-close" value="17:00">
+                        </div>
+                        <div class="day-config">
+                            <label>Thursday</label>
+                            <input type="time" id="thu-open" value="09:00">
+                            <span>to</span>
+                            <input type="time" id="thu-close" value="17:00">
+                        </div>
+                        <div class="day-config">
+                            <label>Friday</label>
+                            <input type="time" id="fri-open" value="09:00">
+                            <span>to</span>
+                            <input type="time" id="fri-close" value="17:00">
+                        </div>
+                        <div class="day-config">
+                            <label>Saturday</label>
+                            <select id="sat-status">
+                                <option value="closed">Closed</option>
+                                <option value="open">Open</option>
+                            </select>
+                        </div>
+                        <div class="day-config">
+                            <label>Sunday</label>
+                            <select id="sun-status">
+                                <option value="closed">Closed</option>
+                                <option value="open">Open</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="update-hours" class="btn-primary">Update Hours</button>
+                </div>
+
+                <div class="jack-message-config">
+                    <h3>After-Hours Message</h3>
+                    <textarea id="after-hours-message" rows="4" placeholder="Enter the message Jack will play after business hours...">Thank you for calling Metro Point Technology. Our office is currently closed. Our business hours are Monday through Friday, 9 AM to 5 PM Eastern Time. Please leave a message after the tone, or you can email us at Support@MetroPointTech.com. We'll get back to you as soon as possible.</textarea>
+                    <button id="update-message" class="btn-primary">Update Message</button>
+                </div>
+
+                <div class="jack-analytics">
+                    <h3>Recent Activity</h3>
+                    <div id="jack-call-log" class="call-log">
+                        <!-- Call activity will be populated -->
+                        <div class="no-data">No recent activity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Panel -->
+            <div id="analytics" class="analytics-panel tab-content hidden">
+                <div class="analytics-header">
+                    <h2>📊 Call Center Analytics</h2>
+                    <div class="analytics-nav">
+                        <a href="analytics-dashboard.html" target="_blank" class="btn-primary">Live Dashboard</a>
+                        <a href="analytics-reports.html" target="_blank" class="btn-secondary">Detailed Reports</a>
+                    </div>
+                </div>
+
+                <div class="analytics-summary">
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <div class="card-icon">📞</div>
+                            <div class="card-content">
+                                <div class="card-value" id="daily-calls">--</div>
+                                <div class="card-label">Calls Today</div>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">✅</div>
+                            <div class="card-content">
+                                <div class="card-value" id="answer-rate">--%</div>
+                                <div class="card-label">Answer Rate</div>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">⏱️</div>
+                            <div class="card-content">
+                                <div class="card-value" id="avg-wait">--:--</div>
+                                <div class="card-label">Avg Wait</div>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="card-icon">👥</div>
+                            <div class="card-content">
+                                <div class="card-value" id="active-agents">-</div>
+                                <div class="card-label">Active Agents</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-quick-stats">
+                    <div class="quick-stat-section">
+                        <h3>Queue Status</h3>
+                        <div id="queue-status-mini" class="queue-status-mini">
+                            <div class="queue-item">
+                                <span class="queue-name">Sales</span>
+                                <span class="queue-waiting" id="sales-waiting">-</span>
+                                <span class="queue-indicator" id="sales-indicator">●</span>
+                            </div>
+                            <div class="queue-item">
+                                <span class="queue-name">Support</span>
+                                <span class="queue-waiting" id="support-waiting">-</span>
+                                <span class="queue-indicator" id="support-indicator">●</span>
+                            </div>
+                            <div class="queue-item">
+                                <span class="queue-name">Billing</span>
+                                <span class="queue-waiting" id="billing-waiting">-</span>
+                                <span class="queue-indicator" id="billing-indicator">●</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-stat-section">
+                        <h3>Performance Today</h3>
+                        <div class="performance-bars">
+                            <div class="performance-item">
+                                <span class="metric-name">First Call Resolution</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="fcr-progress" style="width: 0%"></div>
+                                </div>
+                                <span class="metric-value" id="fcr-value">--%</span>
+                            </div>
+                            <div class="performance-item">
+                                <span class="metric-name">Customer Satisfaction</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="csat-progress" style="width: 0%"></div>
+                                </div>
+                                <span class="metric-value" id="csat-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-actions">
+                    <button id="refresh-analytics" class="btn-secondary">🔄 Refresh Data</button>
+                    <button id="export-today" class="btn-secondary">📊 Export Today's Data</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h3>Audio</h3>
+                        <label>Microphone:
+                            <select id="microphone-select"></select>
+                        </label>
+                        <label>Speaker:
+                            <select id="speaker-select"></select>
+                        </label>
+                        <label>Ringtone:
+                            <select id="ringtone-select">
+                                <option value="default">Default</option>
+                                <option value="classic">Classic</option>
+                                <option value="modern">Modern</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Account</h3>
+                        <label>Display Name:
+                            <input type="text" id="display-name" placeholder="Your Name">
+                        </label>
+                        <label>Phone Number:
+                            <input type="tel" id="phone-number" placeholder="+1 (555) 123-4567" readonly>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="save-settings" class="btn-primary">Save</button>
+                    <button id="cancel-settings" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="login-screen" class="login-screen">
+            <div class="login-form">
+                <img src="assets/logo.png" alt="MPT Phone" class="login-logo">
+                <h2>Welcome to MPT Phone</h2>
+                <form id="login-form">
+                    <input type="email" id="email" placeholder="Email" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit" class="btn-primary">Sign In</button>
+                </form>
+                <p class="signup-link">
+                    Don't have an account? <a href="#signup">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>

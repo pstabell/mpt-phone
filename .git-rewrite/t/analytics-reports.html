@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPT Phone Analytics Reports</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.7/dayjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1a365d;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .nav-link {
+            color: #4a5568;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #e2e8f0;
+            color: #1a365d;
+        }
+
+        .report-filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .filter-input {
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #3182ce;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2c5aa0;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .report-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .report-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a365d;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .export-btn {
+            padding: 6px 12px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .export-btn:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 30px;
+            background: #f8f9fa;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .charts-section {
+            padding: 30px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 15px;
+        }
+
+        .data-table {
+            margin-top: 30px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+            border-top-color: #3182ce;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📈 Analytics Reports</h1>
+            <div class="nav-links">
+                <a href="analytics-dashboard.html" class="nav-link">Live Dashboard</a>
+                <a href="analytics-reports.html" class="nav-link active">Reports</a>
+                <a href="index.html" class="nav-link">Phone App</a>
+            </div>
+        </div>
+
+        <!-- Report Filters -->
+        <div class="report-filters">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Report Type</label>
+                    <select class="filter-input" id="reportType">
+                        <option value="call-volume">Call Volume</option>
+                        <option value="agent-performance">Agent Performance</option>
+                        <option value="queue-analysis">Queue Analysis</option>
+                        <option value="customer-satisfaction">Customer Satisfaction</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Start Date</label>
+                    <input type="date" class="filter-input" id="startDate">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">End Date</label>
+                    <input type="date" class="filter-input" id="endDate">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Group By</label>
+                    <select class="filter-input" id="groupBy">
+                        <option value="hour">Hour</option>
+                        <option value="day">Day</option>
+                        <option value="week">Week</option>
+                        <option value="month">Month</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+                <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+            </div>
+        </div>
+
+        <!-- Report Content -->
+        <div class="report-content">
+            <div class="report-header">
+                <div class="report-title" id="reportTitle">Call Volume Report</div>
+                <div class="export-buttons">
+                    <a href="#" class="export-btn" onclick="exportReport('csv')">📊 Export CSV</a>
+                    <a href="#" class="export-btn" onclick="exportReport('pdf')">📄 Export PDF</a>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="summary-stats" id="summaryStats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalCallsStat">1,247</div>
+                    <div class="stat-label">Total Calls</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgDurationStat">4:32</div>
+                    <div class="stat-label">Avg Duration</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="answerRateStat">94.2%</div>
+                    <div class="stat-label">Answer Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="satisfactionStat">4.6</div>
+                    <div class="stat-label">Satisfaction</div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="charts-grid">
+                    <div>
+                        <div class="chart-title">Call Trends</div>
+                        <div class="chart-container">
+                            <canvas id="trendsChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-title">Performance Metrics</div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="data-table">
+                    <div class="chart-title">Detailed Data</div>
+                    <div class="table-container">
+                        <table id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th>Total Calls</th>
+                                    <th>Answered</th>
+                                    <th>Missed</th>
+                                    <th>Avg Wait Time</th>
+                                    <th>Avg Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AnalyticsReports {
+            constructor() {
+                this.charts = {};
+                this.currentData = null;
+                this.init();
+            }
+
+            init() {
+                this.setupDateDefaults();
+                this.setupCharts();
+                this.generateReport();
+            }
+
+            setupDateDefaults() {
+                const endDate = new Date();
+                const startDate = new Date();
+                startDate.setDate(startDate.getDate() - 7);
+
+                document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+                document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            }
+
+            setupCharts() {
+                // Trends Chart
+                const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+                this.charts.trends = new Chart(trendsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Total Calls',
+                            data: [],
+                            borderColor: '#3182ce',
+                            backgroundColor: 'rgba(49, 130, 206, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Performance Chart
+                const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+                this.charts.performance = new Chart(performanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Answer Rate', 'First Call Resolution', 'Customer Satisfaction'],
+                        datasets: [{
+                            data: [94.2, 87.3, 4.6],
+                            backgroundColor: ['#48bb78', '#ed8936', '#805ad5']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            async generateReport() {
+                const reportType = document.getElementById('reportType').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const groupBy = document.getElementById('groupBy').value;
+
+                // Show loading state
+                this.showLoading();
+
+                try {
+                    const response = await fetch(`/api/analytics/reports?startDate=${startDate}&endDate=${endDate}&groupBy=${groupBy}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.currentData = data.report;
+                        this.updateReport(data.report, reportType);
+                        this.updateSummaryStats(data.report);
+                        this.updateCharts(data.report);
+                        this.updateTable(data.report);
+                    } else {
+                        this.showError('Failed to generate report');
+                    }
+
+                } catch (error) {
+                    console.error('Report generation error:', error);
+                    this.showError('Failed to connect to analytics service');
+                    
+                    // Show sample data
+                    this.generateSampleReport();
+                }
+            }
+
+            generateSampleReport() {
+                const sampleData = [];
+                for (let i = 0; i < 7; i++) {
+                    sampleData.push({
+                        period: `Day ${i + 1}`,
+                        totalCalls: Math.floor(Math.random() * 100 + 50),
+                        answered: Math.floor(Math.random() * 80 + 40),
+                        missed: Math.floor(Math.random() * 20 + 5),
+                        avgWaitTime: Math.floor(Math.random() * 120 + 30),
+                        avgCallDuration: Math.floor(Math.random() * 300 + 120)
+                    });
+                }
+                
+                this.currentData = sampleData;
+                this.updateReport(sampleData, 'call-volume');
+                this.updateSummaryStats(sampleData);
+                this.updateCharts(sampleData);
+                this.updateTable(sampleData);
+            }
+
+            updateReport(data, reportType) {
+                const titles = {
+                    'call-volume': 'Call Volume Report',
+                    'agent-performance': 'Agent Performance Report',
+                    'queue-analysis': 'Queue Analysis Report',
+                    'customer-satisfaction': 'Customer Satisfaction Report'
+                };
+                
+                document.getElementById('reportTitle').textContent = titles[reportType] || 'Analytics Report';
+            }
+
+            updateSummaryStats(data) {
+                const totalCalls = data.reduce((sum, item) => sum + (item.totalCalls || 0), 0);
+                const totalAnswered = data.reduce((sum, item) => sum + (item.answered || 0), 0);
+                const avgDuration = data.reduce((sum, item) => sum + (item.avgCallDuration || 0), 0) / data.length;
+                const answerRate = totalCalls > 0 ? ((totalAnswered / totalCalls) * 100).toFixed(1) : 0;
+
+                document.getElementById('totalCallsStat').textContent = totalCalls.toLocaleString();
+                document.getElementById('avgDurationStat').textContent = this.formatDuration(avgDuration);
+                document.getElementById('answerRateStat').textContent = answerRate + '%';
+                document.getElementById('satisfactionStat').textContent = '4.6'; // Mock satisfaction score
+            }
+
+            updateCharts(data) {
+                // Update trends chart
+                this.charts.trends.data.labels = data.map(item => item.period);
+                this.charts.trends.data.datasets[0].data = data.map(item => item.totalCalls || 0);
+                this.charts.trends.update();
+
+                // Performance chart remains static for now
+                // In production, this would be calculated from real data
+            }
+
+            updateTable(data) {
+                const tbody = document.getElementById('dataTableBody');
+                tbody.innerHTML = '';
+
+                data.forEach(item => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${item.period}</td>
+                        <td>${(item.totalCalls || 0).toLocaleString()}</td>
+                        <td>${(item.answered || 0).toLocaleString()}</td>
+                        <td>${(item.missed || 0).toLocaleString()}</td>
+                        <td>${this.formatDuration(item.avgWaitTime || 0)}</td>
+                        <td>${this.formatDuration(item.avgCallDuration || 0)}</td>
+                    `;
+                });
+            }
+
+            formatDuration(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            showLoading() {
+                const tbody = document.getElementById('dataTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="loading">
+                            <div class="loading-spinner"></div>
+                            Generating report...
+                        </td>
+                    </tr>
+                `;
+            }
+
+            showError(message) {
+                const tbody = document.getElementById('dataTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="loading">
+                            ⚠️ ${message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Initialize reports when page loads
+        let reportsApp;
+        document.addEventListener('DOMContentLoaded', () => {
+            reportsApp = new AnalyticsReports();
+        });
+
+        // Global functions for button actions
+        function generateReport() {
+            if (reportsApp) {
+                reportsApp.generateReport();
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('reportType').value = 'call-volume';
+            document.getElementById('groupBy').value = 'day';
+            
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 7);
+            
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            
+            generateReport();
+        }
+
+        function exportReport(format) {
+            if (!reportsApp || !reportsApp.currentData) {
+                alert('No report data to export. Please generate a report first.');
+                return;
+            }
+
+            if (format === 'csv') {
+                exportToCSV(reportsApp.currentData);
+            } else if (format === 'pdf') {
+                alert('PDF export functionality would be implemented here');
+            }
+        }
+
+        function exportToCSV(data) {
+            const headers = ['Period', 'Total Calls', 'Answered', 'Missed', 'Avg Wait Time', 'Avg Call Duration'];
+            const csvContent = [
+                headers.join(','),
+                ...data.map(row => [
+                    row.period,
+                    row.totalCalls || 0,
+                    row.answered || 0,
+                    row.missed || 0,
+                    row.avgWaitTime || 0,
+                    row.avgCallDuration || 0
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `mpt-phone-report-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>

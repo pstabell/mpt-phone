@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPT Phone - Enterprise Features</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .enterprise-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #1a365d;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #4a5568;
+            font-size: 16px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            padding: 8px;
+            background: #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a365d;
+        }
+
+        .feature-description {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .feature-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #3182ce;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2c5aa0;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+        }
+
+        .btn-success {
+            background: #38a169;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #2f855a;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 100px);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .parking-slot {
+            padding: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .parking-slot.available {
+            background: #f0fff4;
+            border-color: #68d391;
+            color: #22543d;
+        }
+
+        .parking-slot.occupied {
+            background: #fef5e7;
+            border-color: #f6ad55;
+            color: #744210;
+        }
+
+        .parking-slot:hover {
+            transform: scale(1.05);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .device-list {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .device-item {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .device-item:last-child {
+            border-bottom: none;
+        }
+
+        .device-info {
+            flex: 1;
+        }
+
+        .device-type {
+            font-weight: 500;
+            color: #1a365d;
+        }
+
+        .device-number {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .session-info {
+            background: #e6fffa;
+            border: 1px solid #4fd1c7;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+
+        .session-active {
+            color: #234e52;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            border: 1px solid #68d391;
+            color: #22543d;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            border: 1px solid #fc8181;
+            color: #742a2a;
+        }
+
+        .alert-info {
+            background: #ebf8ff;
+            border: 1px solid #63b3ed;
+            color: #2c5282;
+        }
+
+        .supervisor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .call-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+
+        .call-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            color: #1a365d;
+        }
+
+        .call-duration {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .customer-info {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .supervision-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .supervision-controls .btn {
+            flex: 1;
+            padding: 6px 8px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .enterprise-container {
+                padding: 15px;
+            }
+            
+            .status-grid {
+                grid-template-columns: repeat(auto-fit, 80px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="enterprise-container">
+        <div class="header">
+            <h1>🏢 Enterprise Features</h1>
+            <p>Advanced call management tools for large organizations</p>
+        </div>
+
+        <div class="features-grid">
+            <!-- Call Parking -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🅿️</div>
+                    <div class="feature-title">Call Parking</div>
+                </div>
+                <div class="feature-description">
+                    Park calls on designated extensions (701-720) and retrieve them from any phone in the system.
+                </div>
+                
+                <div class="feature-controls">
+                    <div class="form-group">
+                        <label class="form-label">Park Current Call On:</label>
+                        <select id="park-slot-select" class="form-select">
+                            <option value="">Auto-assign slot</option>
+                        </select>
+                    </div>
+                    <button id="park-call-btn" class="btn btn-primary">🅿️ Park Call</button>
+                    <button id="refresh-slots-btn" class="btn btn-secondary">🔄 Refresh Slots</button>
+                </div>
+
+                <div id="parking-status" class="status-grid"></div>
+            </div>
+
+            <!-- Paging System -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📢</div>
+                    <div class="feature-title">Paging System</div>
+                </div>
+                <div class="feature-description">
+                    One-way audio broadcasting to groups of extensions or the entire organization.
+                </div>
+                
+                <div class="feature-controls">
+                    <div class="form-group">
+                        <label class="form-label">Page Target:</label>
+                        <select id="page-target" class="form-select">
+                            <option value="all">All Staff</option>
+                            <option value="sales">Sales Team</option>
+                            <option value="support">Support Team</option>
+                            <option value="management">Management</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Message (Optional):</label>
+                        <textarea id="page-message" class="form-textarea" placeholder="Enter page message..."></textarea>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="override-dnd">
+                        <label for="override-dnd">Override Do Not Disturb</label>
+                    </div>
+                    
+                    <button id="page-btn" class="btn btn-primary">📢 Send Page</button>
+                    <button id="emergency-page-btn" class="btn btn-danger">🚨 Emergency Page</button>
+                </div>
+            </div>
+
+            <!-- Supervisor Tools -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🎧</div>
+                    <div class="feature-title">Supervisor Tools</div>
+                </div>
+                <div class="feature-description">
+                    Call monitoring and coaching tools for supervisors and quality assurance.
+                </div>
+                
+                <div class="feature-controls">
+                    <button id="refresh-calls-btn" class="btn btn-secondary">🔄 Refresh Active Calls</button>
+                </div>
+
+                <div id="active-calls" class="supervisor-grid"></div>
+            </div>
+
+            <!-- Hot Desking -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🏢</div>
+                    <div class="feature-title">Hot Desking</div>
+                </div>
+                <div class="feature-description">
+                    Log into any physical phone and receive your calls, contacts, and settings.
+                </div>
+                
+                <div class="feature-controls">
+                    <div id="hotdesk-login" style="display: block;">
+                        <div class="form-group">
+                            <label class="form-label">Username:</label>
+                            <input type="text" id="hotdesk-username" class="form-input" placeholder="john.doe">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password:</label>
+                            <input type="password" id="hotdesk-password" class="form-input" placeholder="password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Device ID:</label>
+                            <input type="text" id="hotdesk-device" class="form-input" placeholder="desk_phone_101">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location (Optional):</label>
+                            <input type="text" id="hotdesk-location" class="form-input" placeholder="Conference Room A">
+                        </div>
+                        <button id="hotdesk-login-btn" class="btn btn-success">🏢 Login to Hot Desk</button>
+                    </div>
+
+                    <div id="hotdesk-session" class="session-info" style="display: none;">
+                        <div class="session-active">Hot Desk Session Active</div>
+                        <div id="session-details"></div>
+                        <button id="hotdesk-logout-btn" class="btn btn-danger" style="margin-top: 10px;">🚪 Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simultaneous Ring -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📞</div>
+                    <div class="feature-title">Simultaneous Ring</div>
+                </div>
+                <div class="feature-description">
+                    Ring multiple devices simultaneously when a call comes in to your extension.
+                </div>
+                
+                <div class="feature-controls">
+                    <div class="form-group">
+                        <label class="form-label">Ring Strategy:</label>
+                        <select id="ring-strategy" class="form-select">
+                            <option value="simultaneous">Simultaneous (all at once)</option>
+                            <option value="sequential">Sequential (in order)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="business-hours-override">
+                        <label for="business-hours-override">Different strategy for business hours</label>
+                    </div>
+
+                    <div id="devices-list" class="device-list">
+                        <div class="device-item">
+                            <div class="device-info">
+                                <div class="device-type">Desk Phone</div>
+                                <div class="device-number">+1 (239) 426-7058</div>
+                            </div>
+                            <button class="btn btn-danger" onclick="removeDevice(this)">Remove</button>
+                        </div>
+                        <div class="device-item">
+                            <div class="device-info">
+                                <div class="device-type">Mobile</div>
+                                <div class="device-number">+1 (239) 600-9806</div>
+                            </div>
+                            <button class="btn btn-danger" onclick="removeDevice(this)">Remove</button>
+                        </div>
+                    </div>
+                    
+                    <button id="add-device-btn" class="btn btn-secondary">➕ Add Device</button>
+                    <button id="save-ring-settings-btn" class="btn btn-primary">💾 Save Ring Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="alerts-container"></div>
+    </div>
+
+    <script>
+        // Global state
+        let currentHotdeskSession = null;
+        let parkingSlots = [];
+        let activeCalls = [];
+
+        // API Base URL
+        const API_BASE = '/api/enterprise';
+
+        // Utility functions
+        function showAlert(message, type = 'info') {
+            const alertsContainer = document.getElementById('alerts-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alertsContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // =================== CALL PARKING ===================
+
+        async function loadParkingSlots() {
+            try {
+                const response = await fetch(`${API_BASE}/parking/slots`);
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                parkingSlots = data.slots;
+                updateParkingSlotsUI();
+            } catch (error) {
+                console.error('Load parking slots error:', error);
+                showAlert('Failed to load parking slots', 'error');
+            }
+        }
+
+        function updateParkingSlotsUI() {
+            const statusGrid = document.getElementById('parking-status');
+            const select = document.getElementById('park-slot-select');
+            
+            statusGrid.innerHTML = '';
+            select.innerHTML = '<option value="">Auto-assign slot</option>';
+
+            parkingSlots.forEach(slot => {
+                // Status grid
+                const slotEl = document.createElement('div');
+                slotEl.className = `parking-slot ${slot.available ? 'available' : 'occupied'}`;
+                slotEl.innerHTML = `
+                    <div>${slot.slot}</div>
+                    <div>${slot.available ? 'Free' : 'Busy'}</div>
+                `;
+                
+                if (!slot.available) {
+                    slotEl.title = `${slot.callerInfo?.name || 'Unknown'} - ${slot.callerInfo?.number || 'Unknown'}`;
+                    slotEl.onclick = () => retrieveParkedCall(slot.slot);
+                }
+                
+                statusGrid.appendChild(slotEl);
+
+                // Select options (only available slots)
+                if (slot.available) {
+                    const option = document.createElement('option');
+                    option.value = slot.slot;
+                    option.textContent = `Slot ${slot.slot}`;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        async function parkCall() {
+            const parkSlot = document.getElementById('park-slot-select').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/parking/park`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        callId: 'demo_call_123',
+                        parkSlot: parkSlot || undefined,
+                        parkedByExtension: '100',
+                        callerInfo: { name: 'Demo Caller', number: '+1234567890' }
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                showAlert(`Call parked on extension ${data.parkSlot}`, 'success');
+                loadParkingSlots();
+            } catch (error) {
+                console.error('Park call error:', error);
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function retrieveParkedCall(parkSlot) {
+            try {
+                const response = await fetch(`${API_BASE}/parking/retrieve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        parkSlot,
+                        retrieveFromExtension: '100'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                showAlert(data.message, 'success');
+                loadParkingSlots();
+            } catch (error) {
+                console.error('Retrieve call error:', error);
+                showAlert(error.message, 'error');
+            }
+        }
+
+        // =================== PAGING SYSTEM ===================
+
+        async function sendPage(isEmergency = false) {
+            const target = document.getElementById('page-target').value;
+            const message = document.getElementById('page-message').value;
+            const overrideDND = document.getElementById('override-dnd').checked || isEmergency;
+            
+            try {
+                const response = await fetch(`${API_BASE}/paging/page`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: isEmergency ? 'emergency' : (target === 'all' ? 'all' : 'group'),
+                        target: target === 'all' ? null : target,
+                        message: message || (isEmergency ? 'EMERGENCY ALERT' : 'Attention please'),
+                        priority: isEmergency ? 'emergency' : 'normal',
+                        overrideDND
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                showAlert(`Page sent to ${data.target} (${data.targetExtensions.length} extensions)`, 'success');
+                document.getElementById('page-message').value = '';
+            } catch (error) {
+                console.error('Send page error:', error);
+                showAlert(error.message, 'error');
+            }
+        }
+
+        // =================== SUPERVISOR TOOLS ===================
+
+        async function loadActiveCalls() {
+            try {
+                const response = await fetch(`${API_BASE}/supervision/active-calls`);
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                activeCalls = data.activeCalls;
+                updateActiveCallsUI();
+            } catch (error) {
+                console.error('Load active calls error:', error);
+                showAlert('Failed to load active calls', 'error');
+            }
+        }
+
+        function updateActiveCallsUI() {
+            const container = document.getElementById('active-calls');
+            container.innerHTML = '';
+
+            if (activeCalls.length === 0) {
+                container.innerHTML = '<div class="alert-info">No active calls</div>';
+                return;
+            }
+
+            activeCalls.forEach(call => {
+                const callCard = document.createElement('div');
+                callCard.className = 'call-card';
+                callCard.innerHTML = `
+                    <div class="call-header">
+                        <div class="agent-name">${call.agentName} (${call.agentExtension})</div>
+                        <div class="call-duration">${formatDuration(call.duration)}</div>
+                    </div>
+                    <div class="customer-info">
+                        <strong>${call.customerName || 'Unknown'}</strong><br>
+                        ${call.customerNumber}<br>
+                        <small>${call.direction} • ${call.department}</small>
+                    </div>
+                    <div class="supervision-controls">
+                        <button class="btn btn-secondary" onclick="monitorCall('${call.callId}')">👁️ Monitor</button>
+                        <button class="btn btn-primary" onclick="whisperCall('${call.callId}')">🗣️ Whisper</button>
+                        <button class="btn btn-danger" onclick="bargeCall('${call.callId}')">📞 Barge</button>
+                    </div>
+                `;
+                container.appendChild(callCard);
+            });
+        }
+
+        async function superviseCall(callId, mode) {
+            try {
+                const response = await fetch(`${API_BASE}/supervision/monitor`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        supervisorExtension: '900',
+                        targetCallId: callId,
+                        mode
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                showAlert(data.message, 'success');
+            } catch (error) {
+                console.error('Supervise call error:', error);
+                showAlert(error.message, 'error');
+            }
+        }
+
+        function monitorCall(callId) { superviseCall(callId, 'monitor'); }
+        function whisperCall(callId) { superviseCall(callId, 'whisper'); }
+        function bargeCall(callId) { superviseCall(callId, 'barge'); }
+
+        // =================== HOT DESKING ===================
+
+        async function hotdeskLogin() {
+            const username = document.getElementById('hotdesk-username').value;
+            const password = document.getElementById('hotdesk-password').value;
+            const deviceId = document.getElementById('hotdesk-device').value;
+            const location = document.getElementById('hotdesk-location').value;
+            
+            if (!username || !password || !deviceId) {
+                showAlert('Please fill in username, password, and device ID', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/hotdesk/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, deviceId, location })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                currentHotdeskSession = data;
+                updateHotdeskUI();
+                showAlert(data.message, 'success');
+            } catch (error) {
+                console.error('Hot desk login error:', error);
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function hotdeskLogout() {
+            if (!currentHotdeskSession) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/hotdesk/logout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId: currentHotdeskSession.sessionId })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                currentHotdeskSession = null;
+                updateHotdeskUI();
+                showAlert(data.message, 'success');
+            } catch (error) {
+                console.error('Hot desk logout error:', error);
+                showAlert(error.message, 'error');
+            }
+        }
+
+        function updateHotdeskUI() {
+            const loginDiv = document.getElementById('hotdesk-login');
+            const sessionDiv = document.getElementById('hotdesk-session');
+            const detailsDiv = document.getElementById('session-details');
+            
+            if (currentHotdeskSession) {
+                loginDiv.style.display = 'none';
+                sessionDiv.style.display = 'block';
+                detailsDiv.innerHTML = `
+                    <strong>Logged in as:</strong> ${document.getElementById('hotdesk-username').value}<br>
+                    <strong>Device:</strong> ${document.getElementById('hotdesk-device').value}<br>
+                    <strong>Location:</strong> ${document.getElementById('hotdesk-location').value || 'Not specified'}<br>
+                    <strong>Session:</strong> ${currentHotdeskSession.sessionId}
+                `;
+                
+                // Clear form
+                document.getElementById('hotdesk-username').value = '';
+                document.getElementById('hotdesk-password').value = '';
+                document.getElementById('hotdesk-device').value = '';
+                document.getElementById('hotdesk-location').value = '';
+            } else {
+                loginDiv.style.display = 'block';
+                sessionDiv.style.display = 'none';
+            }
+        }
+
+        // =================== SIMULTANEOUS RING ===================
+
+        async function saveRingSettings() {
+            const strategy = document.getElementById('ring-strategy').value;
+            const businessHoursOverride = document.getElementById('business-hours-override').checked;
+            
+            // Get devices from UI
+            const deviceItems = document.querySelectorAll('#devices-list .device-item');
+            const devices = Array.from(deviceItems).map((item, index) => {
+                const type = item.querySelector('.device-type').textContent.toLowerCase().replace(' ', '_');
+                const number = item.querySelector('.device-number').textContent;
+                return {
+                    type,
+                    number,
+                    priority: 1,
+                    delay: index * 2
+                };
+            });
+            
+            try {
+                const response = await fetch(`${API_BASE}/ring-settings/user_123`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ devices, strategy, businessHoursOverride })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                showAlert('Ring settings saved successfully', 'success');
+            } catch (error) {
+                console.error('Save ring settings error:', error);
+                showAlert(error.message, 'error');
+            }
+        }
+
+        function removeDevice(button) {
+            button.closest('.device-item').remove();
+        }
+
+        function addDevice() {
+            const deviceType = prompt('Device type (desk_phone, mobile, softphone):');
+            const deviceNumber = prompt('Device number:');
+            
+            if (deviceType && deviceNumber) {
+                const devicesList = document.getElementById('devices-list');
+                const deviceItem = document.createElement('div');
+                deviceItem.className = 'device-item';
+                deviceItem.innerHTML = `
+                    <div class="device-info">
+                        <div class="device-type">${deviceType.replace('_', ' ')}</div>
+                        <div class="device-number">${deviceNumber}</div>
+                    </div>
+                    <button class="btn btn-danger" onclick="removeDevice(this)">Remove</button>
+                `;
+                devicesList.appendChild(deviceItem);
+            }
+        }
+
+        // =================== EVENT LISTENERS ===================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Call Parking
+            document.getElementById('park-call-btn').onclick = parkCall;
+            document.getElementById('refresh-slots-btn').onclick = loadParkingSlots;
+            
+            // Paging
+            document.getElementById('page-btn').onclick = () => sendPage(false);
+            document.getElementById('emergency-page-btn').onclick = () => sendPage(true);
+            
+            // Supervisor Tools
+            document.getElementById('refresh-calls-btn').onclick = loadActiveCalls;
+            
+            // Hot Desking
+            document.getElementById('hotdesk-login-btn').onclick = hotdeskLogin;
+            document.getElementById('hotdesk-logout-btn').onclick = hotdeskLogout;
+            
+            // Simultaneous Ring
+            document.getElementById('add-device-btn').onclick = addDevice;
+            document.getElementById('save-ring-settings-btn').onclick = saveRingSettings;
+            
+            // Initial data load
+            loadParkingSlots();
+            loadActiveCalls();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                loadParkingSlots();
+                loadActiveCalls();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
